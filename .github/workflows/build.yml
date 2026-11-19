@@ -1,0 +1,34 @@
+
+name: Build AntForestPort v3.3.1
+
+on:
+  workflow_dispatch:
+
+jobs:
+  build:
+    runs-on: macos-15
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Extract source ZIP
+        run: |
+          mkdir source
+          unzip -q "AntForestPort-v3.3.1-后台执行.zip" -d source
+          find source -name Makefile -print
+
+      - name: Build
+        run: |
+          cd source/AntForestTrollFools-main
+          make test
+          make clean
+          make -j2
+
+      - name: Upload dylibs
+        uses: actions/upload-artifact@v4
+        with:
+          name: AntForestPort-v3.3.1-dylibs
+          path: |
+            source/**/build/AntForestPort-v3.3.1.dylib
+            source/**/build/AntForestPort-v3.3.1-iOS14.dylib
+          if-no-files-found: error
